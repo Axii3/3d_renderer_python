@@ -1,21 +1,29 @@
 import pygame
+from pygame import Vector2
+from vertex import Vertex
+import renderer
+import window
 
-pygame.init()
-screen = pygame.display.set_mode((640, 480))
-clock = pygame.time.Clock()
-deltatime = 0.0
-running = True
+### references
 
-while running:
-    for event in pygame.event.get():
+### variables
+
+window.render.add_vertex(Vertex(Vector2(-50, 0)))
+window.render.add_vertex(Vertex(Vector2(50, 0)))
+
+while window.running:
+    for event in window.pygame.event.get():
         if event.type == pygame.QUIT:
-            running = False
+            window.running = False
 
-    screen.fill("#FFD543")
+    window.screen.fill("#000000")
+
+    # draw
+    window.render.draw_vertices()
 
 
-    pygame.display.flip()
+    window.pygame.display.flip()
+    window.deltatime = window.clock.tick(60) / 1000
 
-    deltatime = clock.tick(60) / 1000
 
-pygame.quit()
+window.pygame.quit()

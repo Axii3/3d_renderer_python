@@ -21,3 +21,4 @@ if echo "$output" | grep -q "ModuleNotFoundError"; then
     
     exit;
 fi
+cat log.txt
