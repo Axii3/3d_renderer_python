@@ -9,18 +9,36 @@ import window
 # --
 
 ### variables
-player_pos = Vector3(0, 0, 1)
+player_pos = Vector3(0, 0, 100)
 player_speed = 100.0
 
 
-window.render.add_vertex(Vertex(Vector3(-50, 50, 0)))
-window.render.add_vertex(Vertex(Vector3(50, 50, 0)))
-window.render.add_vertex(Vertex(Vector3(50, -50, 0)))
-window.render.add_vertex(Vertex(Vector3(-50, -50, 0)))
-window.render.add_vertex(Vertex(Vector3(-50, 50, 50)))
-window.render.add_vertex(Vertex(Vector3(50, 50, 50)))
-window.render.add_vertex(Vertex(Vector3(50, -50, 50)))
+window.render.add_vertex(Vertex(Vector3(-50, -50, -50)))
+window.render.add_vertex(Vertex(Vector3(-50, 50, -50)))
+window.render.add_vertex(Vertex(Vector3(50, -50, -50)))
+window.render.add_vertex(Vertex(Vector3(50, 50, -50)))
 window.render.add_vertex(Vertex(Vector3(-50, -50, 50)))
+window.render.add_vertex(Vertex(Vector3(-50, 50, 50)))
+window.render.add_vertex(Vertex(Vector3(50, -50, 50)))
+window.render.add_vertex(Vertex(Vector3(50, 50, 50)))
+# front quad
+window.render.add_triangle(0, 1, 2)
+window.render.add_triangle(1, 3, 2)
+# back quad
+window.render.add_triangle(4, 5, 6)
+window.render.add_triangle(5, 7, 6)
+# left quad
+window.render.add_triangle(5, 4, 1)
+window.render.add_triangle(4, 0, 1)
+# right quad
+window.render.add_triangle(7, 6, 3)
+window.render.add_triangle(6, 2, 3)
+# top quad
+window.render.add_triangle(1, 5, 3)
+window.render.add_triangle(5, 7, 3)
+# bottom quad
+window.render.add_triangle(0, 4, 2)
+window.render.add_triangle(4, 6, 2)
 
 while window.running:
     window.deltatime = window.clock.tick(60) / 1000
@@ -48,7 +66,7 @@ while window.running:
     window.screen.fill("#000000")
 
     # draw
-    window.render.draw_vertices()
+    window.render.draw()
 
     # update
     renderer.camera_position.x = player_pos.x

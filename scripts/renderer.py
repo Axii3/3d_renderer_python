@@ -8,24 +8,27 @@ pygame.init()
 ### references
 
 ### variables
-camera_position = Vector3(0, 0, 1)
+camera_position = Vector3(0, 0, 0)
 window_width = 0
 window_height = 0
-field_of_view = 150
-
+field_of_view = 300
+#near_clipping_plane = -300
+vertex_rendering = False
 
 class Renderer():
 	def __init__(self, screen):
+		self.triangles = []
 		self.vertices = []
 		self.screen = screen
 
-	def draw_vertices(self):
-		for v in range(len(self.vertices)):
-			current_vertex = self.vertices[v]
-			current_vertex.draw(self.screen)
-			#if (v>0):
-			pygame.draw.line(self.screen, "#CCCCCC", current_vertex.get_screen_space_pos(), self.vertices[v-1].get_screen_space_pos(), 5)
+	def draw(self):
+		for t in range(len(self.triangles)):
+			current_triangle = self.triangles[t]
+			current_triangle.draw(self.screen)
+			
 
+	def add_triangle(self, v1, v2, v3):
+		self.triangles.append(Triangle(self.screen, self.vertices[v1], self.vertices[v2], self.vertices[v3]))
 
 	def add_vertex(self, vertex):
 		self.vertices.append(vertex)
@@ -40,8 +43,10 @@ class Vertex():
 
 	def get_screen_space_pos(self):
 		vs_pos = self.get_view_space_pos()
+		if (vs_pos.z + field_of_view == 0):
+			vs_pos.z += 1
 		ss_x = (vs_pos.x * field_of_view) / (vs_pos.z + field_of_view)
-		ss_y = (vs_pos.y * field_of_view) / (vs_pos.z + field_of_view)
+		ss_y = -(vs_pos.y * field_of_view) / (vs_pos.z + field_of_view)
 		# offset pivot from top left to center
 		offset_pos = Vector2(window_width/2 + ss_x, window_height/2 + ss_y)
 		return offset_pos
@@ -49,3 +54,20 @@ class Vertex():
 	def get_view_space_pos(self):
 		view_pos = Vector3(self.world_position.x - camera_position.x, self.world_position.y - camera_position.y, self.world_position.z - camera_position.z)
 		return view_pos
+
+class Triangle():
+	def __init__(self, screen, vertex1, vertex2, vertex3):
+		self.screen = screen
+		self.vertex1 = vertex1
+		self.vertex2 = vertex2
+		self.vertex3 = vertex3
+
+	def draw(self, screen):
+		#if (self.vertex1.on_screen() | self.vertex2.on_screen() | self.vertex3.on_screen()):
+		pygame.draw.line(self.screen, "#CCCCCC", self.vertex1.get_screen_space_pos(), self.vertex2.get_screen_space_pos(), 5)
+		pygame.draw.line(self.screen, "#CCCCCC", self.vertex2.get_screen_space_pos(), self.vertex3.get_screen_space_pos(), 5)
+		pygame.draw.line(self.screen, "#CCCCCC", self.vertex3.get_screen_space_pos(), self.vertex1.get_screen_space_pos(), 5)
+		if vertex_rendering:
+			self.vertex1.draw(screen)
+			self.vertex2.draw(screen)
+			self.vertex3.draw(screen)
