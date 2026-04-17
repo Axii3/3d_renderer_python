@@ -14,6 +14,5 @@ deltatime = 0.0
 running = True
 width = pygame.display.get_window_size()[0]
 height = pygame.display.get_window_size()[1]
-
-
-
+renderer.window_width = width
+renderer.window_height = height
