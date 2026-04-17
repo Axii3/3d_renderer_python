@@ -12,7 +12,7 @@ import window
 player_pos = Vector3(0, 0, 100)
 player_speed = 100.0
 
-
+'''
 window.render.add_vertex(Vertex(Vector3(-50, -50, -50)))
 window.render.add_vertex(Vertex(Vector3(-50, 50, -50)))
 window.render.add_vertex(Vertex(Vector3(50, -50, -50)))
@@ -39,6 +39,14 @@ window.render.add_triangle(5, 7, 3)
 # bottom quad
 window.render.add_triangle(0, 4, 2)
 window.render.add_triangle(4, 6, 2)
+'''
+
+window.render.add_vertex(Vertex(Vector3(-50, -50, -50)))
+window.render.add_vertex(Vertex(Vector3(-40, 50, -50)))
+window.render.add_vertex(Vertex(Vector3(50, -20, -70)))
+window.render.add_vertex(Vertex(Vector3(50, -50, -50)))
+
+window.render.add_triangle(0, 1, 2)
 
 while window.running:
     window.deltatime = window.clock.tick(60) / 1000

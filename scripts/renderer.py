@@ -1,5 +1,6 @@
 
 import pygame
+import pygame.gfxdraw
 from pygame import Vector3
 from pygame import Vector2
 
@@ -13,7 +14,7 @@ window_width = 0
 window_height = 0
 field_of_view = 300
 near_clipping_plane = -50
-vertex_rendering = False
+vertex_rendering = True
 
 class Renderer():
 	def __init__(self, screen):
@@ -39,7 +40,7 @@ class Vertex():
 		pass
 	def draw(self, screen):
 		pos = self.get_screen_space_pos()
-		pygame.draw.circle(screen, "#FFFFFF", (pos.x, pos.y), 5.0)
+		pygame.draw.circle(screen, "#FFFFFF", (window_width/2 + pos.x, window_height/2 + pos.y), 5.0)
 
 	def get_screen_space_pos(self):
 		vs_pos = self.get_view_space_pos()
@@ -49,8 +50,8 @@ class Vertex():
 		ss_y = -(vs_pos.y * field_of_view) / (vs_pos.z + field_of_view)
 
 		# offset pivot from top left to center
-		offset_pos = Vector2(window_width/2 + ss_x, window_height/2 + ss_y)
-		return offset_pos
+		ss_vector = Vector2(ss_x, ss_y)
+		return ss_vector
 
 	def get_view_space_pos(self):
 		view_pos = Vector3(self.world_position.x - camera_position.x, self.world_position.y - camera_position.y, self.world_position.z - camera_position.z)
@@ -73,9 +74,55 @@ class Triangle():
 		if not (self.vertex1.on_screen() or self.vertex2.on_screen() or self.vertex3.on_screen()):
 			return
 
-		pygame.draw.line(self.screen, "#CCCCCC", self.vertex1.get_screen_space_pos(), self.vertex2.get_screen_space_pos(), 5)
-		pygame.draw.line(self.screen, "#CCCCCC", self.vertex2.get_screen_space_pos(), self.vertex3.get_screen_space_pos(), 5)
-		pygame.draw.line(self.screen, "#CCCCCC", self.vertex3.get_screen_space_pos(), self.vertex1.get_screen_space_pos(), 5)
+
+		col = (255, 255, 255)
+
+		v1x = int(self.vertex1.get_screen_space_pos().x)
+		v1y = int(self.vertex1.get_screen_space_pos().y)
+		v2x = int(self.vertex2.get_screen_space_pos().x)
+		v2y = int(self.vertex2.get_screen_space_pos().y)
+		v3x = int(self.vertex3.get_screen_space_pos().x)
+		v3y = int(self.vertex3.get_screen_space_pos().y)
+
+		v3_width = abs(v2x - v3x)
+		v3_height = abs(v2y - v3y)
+		v3_m = v3_height / v3_width
+
+		v2_width = abs(v1x - v3x)
+		v2_height = abs(v1y - v3y)
+		v2_m = v2_height / v2_width
+
+		v1_width = abs(v2x - v1x)
+		v1_height = abs(v2y - v1y)
+		v1_m = v1_height / v1_width
+		
+		for x in range(v1_width):
+			c_x = v1x + x
+			c_y = int((x+1) * v1_m) - int(x * v2_m)
+
+			for y in range(c_y):
+				x_pixel_pos = int(window_width/2 + c_x)
+				y_pixel_pos = int(window_height/2 + v1y) - y
+				y_pixel_pos = y_pixel_pos - int(x * v2_m)
+				pygame.gfxdraw.pixel(screen, x_pixel_pos, y_pixel_pos, col)
+		
+		for x_t2 in range(v2_width - v1_width):
+			x =	x_t2 + v1_width
+			c_x = v1x + x
+			c_y = int((v3_width - (x_t2+1)) * v3_m) + int((v3_width-(x_t2+1)) * v2_m)
+			#int((x + v1_width) * v2_m)
+
+			for y in range(c_y):
+				x_pixel_pos = int(window_width/2 + c_x)
+				y_pixel_pos = int(window_height/2 + v1y) - y
+				y_pixel_pos = y_pixel_pos - int(x * v2_m)
+				pygame.gfxdraw.pixel(screen, x_pixel_pos, y_pixel_pos, col)
+			
+
+
+		#pygame.draw.line(self.screen, "#CCCCCC", self.vertex1.get_screen_space_pos(), self.vertex2.get_screen_space_pos(), 5)
+		#pygame.draw.line(self.screen, "#CCCCCC", self.vertex2.get_screen_space_pos(), self.vertex3.get_screen_space_pos(), 5)
+		#pygame.draw.line(self.screen, "#CCCCCC", self.vertex3.get_screen_space_pos(), self.vertex1.get_screen_space_pos(), 5)
 		if vertex_rendering:
 			self.vertex1.draw(screen)
 			self.vertex2.draw(screen)
